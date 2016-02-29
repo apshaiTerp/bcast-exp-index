@@ -2,14 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   
-  <groupId>com.ac.ems</groupId>
-  <artifactId>ac-ems-system-pojos</artifactId>
+  <groupId>com.umkc.bcast</groupId>
+  <artifactId>bcast-exp-index</artifactId>
   <version>0.9</version>
   <packaging>jar</packaging>
 
-  <name>POJO library for EMS Ambulance Diversion project</name>
-  <description>POJO Library and Tools to support the EMS Ambulance Diversion project</description>
-  <inceptionYear>2015</inceptionYear>
+  <name>Basic library for Broadcast Index Construction Project</name>
+  <description>Java Libraries and Base Classes for Wireless Broadcast Cycle Construction</description>
+  <inceptionYear>2016</inceptionYear>
   
   <developers>
     <developer>
@@ -24,16 +24,16 @@
   </developers>
   
   <scm>
-    <connection>scm:git:git@github.com/apshaiTerp/ac-ems-system-pojos.git</connection>
-    <developerConnection>scm:git:git@github.com/apshaiTerp/ac-ems-system-pojos.git</developerConnection>
-    <url>http://github.com/apshaiTerp/ac-ems-system-pojos</url>
+    <connection>scm:git:git@github.com/apshaiTerp/bcast-exp-index.git</connection>
+    <developerConnection>scm:git:git@github.com/apshaiTerp/bcast-exp-index.git</developerConnection>
+    <url>http://github.com/apshaiTerp/bcast-exp-index</url>
     <tag>HEAD</tag>
   </scm>
   
   <properties>
     <!--  Depedency Versions  -->  
-    <commons.io.version>2.1</commons.io.version>
     <junit.version>4.11</junit.version>
+    
     <!--  Plugin Versions  -->
     <compiler.plugin.version>3.1</compiler.plugin.version>
     <clover.version>3.3.0</clover.version>
@@ -45,18 +45,9 @@
   
 
   <dependencies>
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <version>${commons.io.version}</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-       <artifactId>jackson-databind</artifactId>
-       <version>2.3.4</version>
-       <scope>compile</scope>
-    </dependency>
+    <!-- Build Dependencies -->
+    
+    
     <!-- Test Dependencies -->
     <dependency>
       <groupId>junit</groupId>
@@ -97,7 +88,7 @@
           <detectLinks>true</detectLinks>
           <docencoding>UTF-8</docencoding>
           <docfilessubdirs>true</docfilessubdirs>
-          <source>1.7</source>
+          <source>1.8</source>
         </configuration>
         <executions>
           <execution>
@@ -156,7 +147,7 @@
           <detectLinks>true</detectLinks>
           <docencoding>UTF-8</docencoding>
           <docfilessubdirs>true</docfilessubdirs>
-          <source>1.7</source>
+          <source>1.8</source>
         </configuration>
       </plugin>
       <plugin>
