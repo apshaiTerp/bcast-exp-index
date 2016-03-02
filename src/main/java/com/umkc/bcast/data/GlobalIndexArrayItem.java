@@ -6,7 +6,7 @@ package com.umkc.bcast.data;
  * Then we have the time to wait to find our data in both blocks (our substitute time measurement)
  * and in buckets, which helps primarily for troubleshooting index access.
  * 
- * So, for example, our value is in the next bucket, and the bucket size is 10 data nodes and 
+ * <p>So, for example, our value is in the next bucket, and the bucket size is 10 data nodes and 
  * terminated by a key value of 'final', our values would look like this:
  * <ul><li>maxKeyValue = "final"</li>
  * <li>waitTimeAsBuckets = 1</li>

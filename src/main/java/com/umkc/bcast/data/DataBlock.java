@@ -8,7 +8,7 @@ package com.umkc.bcast.data;
  * @author AC010168
  *
  */
-public abstract class DataBlock {
+public abstract class DataBlock extends Block {
 
   /** 
    * A unique identifier tag that identifies this particular element distinctly, even when using a skewed

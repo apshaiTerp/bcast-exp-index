@@ -2,6 +2,7 @@ package com.umkc.bcast.data.impl;
 
 import java.util.ArrayList;
 
+import com.umkc.bcast.data.BlockType;
 import com.umkc.bcast.data.GlobalIndexArrayItem;
 import com.umkc.bcast.data.IndexBlock;
 
@@ -48,6 +49,7 @@ public class GlobalFlatIndexBlock extends IndexBlock {
   
   /** Simple Constructor */
   public GlobalFlatIndexBlock() {
+    blockType        = BlockType.GLOBAL_FLAT_INDEX_BLOCK;
     firstBucketValue = null;
     exponentialIndex = new ArrayList<GlobalIndexArrayItem>();
   }
@@ -58,8 +60,9 @@ public class GlobalFlatIndexBlock extends IndexBlock {
    * @param firstBucketValue
    */
   public GlobalFlatIndexBlock(String firstBucketValue) {
+    blockType             = BlockType.GLOBAL_FLAT_INDEX_BLOCK;
     this.firstBucketValue = firstBucketValue;
-    exponentialIndex = new ArrayList<GlobalIndexArrayItem>();
+    exponentialIndex      = new ArrayList<GlobalIndexArrayItem>();
   }
   
   /* (non-Javadoc)

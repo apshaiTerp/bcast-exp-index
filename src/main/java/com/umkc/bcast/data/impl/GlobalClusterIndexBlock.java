@@ -2,6 +2,7 @@ package com.umkc.bcast.data.impl;
 
 import java.util.ArrayList;
 
+import com.umkc.bcast.data.BlockType;
 import com.umkc.bcast.data.GlobalIndexArrayItem;
 import com.umkc.bcast.data.IndexBlock;
 
@@ -106,6 +107,7 @@ public class GlobalClusterIndexBlock extends IndexBlock {
   
   /** Simple Constructor */
   public GlobalClusterIndexBlock() {
+    blockType        = BlockType.GLOBAL_CLUSTER_INDEX_BLOCK;
     clusterGroup     = null;
     firstBucketValue = null;
     clusterIndex     = new ArrayList<GlobalIndexArrayItem>();
@@ -113,6 +115,7 @@ public class GlobalClusterIndexBlock extends IndexBlock {
   }
   
   public GlobalClusterIndexBlock(String clusterGroup, String firstBucketValue) {
+    blockType             = BlockType.GLOBAL_CLUSTER_INDEX_BLOCK;
     this.clusterGroup     = clusterGroup;
     this.firstBucketValue = firstBucketValue;
     clusterIndex          = new ArrayList<GlobalIndexArrayItem>();
