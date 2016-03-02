@@ -12,6 +12,7 @@ import com.umkc.bcast.data.impl.LocalIndexBlock;
  * <ol><li>Initialize the Bucket.  Specify whether we are using the uniqueIdentifier (for flat
  *         indexes) or the simpler data key (for clustered indexes).</li>
  *     <li>Add data blocks to this Bucket.</li>
+ *     <li>Construct the Local Index</li>
  *     <li>Externally construct the Global Index blocks, using the getFirstBucketKey() and
  *         getLastBucketKey() methods of this Bucket</li>
  *     <li>Add the Global Index to this Bucket.</li>
@@ -41,6 +42,8 @@ public class Bucket {
   public Bucket(String bucketLabel, boolean useUniqueIdentifier) {
     localIndex = new LocalIndexBlock();
     localIndex.setBlockID("LocalIndex " + bucketLabel);
+    
+    dataBlocks = new ArrayList<DataBlock>();
   }
 
   /**

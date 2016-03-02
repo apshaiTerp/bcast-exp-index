@@ -14,10 +14,9 @@ public class MockDataBlock extends DataBlock {
   private String mockDataDescription;
   private int    mockDataValue;
   
-  public MockDataBlock(String mockDataDescription, int mockDataValue, String blockID, String uniqueIdentifier, String clusterGroup, String dataKey) {
+  public MockDataBlock(String mockDataDescription, int mockDataValue, String uniqueIdentifier, String clusterGroup, String dataKey) {
     this.mockDataDescription = mockDataDescription;
     this.mockDataValue       = mockDataValue;
-    this.blockID             = blockID;
     this.uniqueIdentifier    = uniqueIdentifier;
     this.clusterGroup        = clusterGroup;
     this.dataKey             = dataKey;
