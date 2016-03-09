@@ -30,8 +30,15 @@ public class LocalIndexBlock extends IndexBlock {
     //DEBUG
     System.out.println ("Reading " + blockID + ".  Looking for where " + searchKey + " should be found...");
     
-    //TODO This is where the real work of parsing the index block takes place.
+    for (LocalIndexArrayItem localItem : localIndex) {
+      if (localItem.getBlockKeyValue().compareTo(searchKey) == 0)
+        return localItem.getWaitTimeAsBlocks();
+    }
     
+    //This is a tricky part.  Currently the new default behavior is to return a -1 to indicate that although
+    //we think the value should be part of this indexed bucket, it's not found.
+    //The correct follow-up behavior should be to either terminate the query, or grab the next global index
+    //offset in the hopes that maybe the value we want will come around in the next cycle.
     return -1;
   }
   
