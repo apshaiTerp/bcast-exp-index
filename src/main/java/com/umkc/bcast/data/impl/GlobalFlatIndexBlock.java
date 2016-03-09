@@ -71,11 +71,49 @@ public class GlobalFlatIndexBlock extends IndexBlock {
   @Override
   public int getNextReadOffset(String searchKey) {
     //DEBUG
-    System.out.println ("Reading " + blockID + ".  Looking for where " + searchKey + " should be found...");
+    //System.out.println ("Reading " + blockID + ".  Looking for where " + searchKey + " should be found...");
     
-    //TODO This is where the real work of parsing the index block takes place.
-    
-    return -1;
+    if (searchKey.compareTo(firstBucketValue) < 0) {
+      //DEBUG
+      //System.out.println ("The Search Key is before values in this index bucket");
+      
+      //If the term we want comes 'before' this bucket, we need to skip through the index until we've wrapped
+      //Since we're guaranteed the last index item will reference the max key in the bucket immediately
+      //preceeding this one.
+      for (GlobalIndexArrayItem indexItem : exponentialIndex) {
+        //If the indexEntry preceeds this bucket, and our search key is less than that max, we found what we wanted
+        if ((indexItem.getMaxKeyValue().compareTo(firstBucketValue) < 0) && (searchKey.compareTo(indexItem.getMaxKeyValue()) <= 0)) {
+          //DEBUG
+          //System.out.println ("Found my hit in [" + indexItem.getWaitTimeAsBuckets() + " | " +  + indexItem.getWaitTimeAsBlocks() + " | " + indexItem.getMaxKeyValue() + "]");
+          return indexItem.getWaitTimeAsBlocks();
+        }
+      }
+      
+      //If we somehow didn't find our value, then we've got a big problem, throw an error
+      throw new RuntimeException("Malformed Index Block.  Search Key could not be found correctly");
+    } else {
+      //DEBUG
+      //System.out.println ("The Search Key is equal to or after values in this index bucket");
+      
+      //In this case, there are two possibilities.  One, the search term we want is easily found under an index
+      //block.  Two, the term we want is in a range that 'wraps', so the bucket isn't bounded by the last lexical
+      //search term.
+      for (GlobalIndexArrayItem indexItem : exponentialIndex) {
+        if (searchKey.compareTo(indexItem.getMaxKeyValue()) <= 0) {
+          //DEBUG
+          //System.out.println ("Found my hit in [" + indexItem.getWaitTimeAsBuckets() + " | " +  + indexItem.getWaitTimeAsBlocks() + " | " + indexItem.getMaxKeyValue() + "]");
+          return indexItem.getWaitTimeAsBlocks();
+        } else if ((searchKey.compareTo(indexItem.getMaxKeyValue()) > 0) && (firstBucketValue.compareTo(indexItem.getMaxKeyValue()) > 0)) {
+          //DEBUG
+          //System.out.println ("Found my hit in [" + indexItem.getWaitTimeAsBuckets() + " | " +  + indexItem.getWaitTimeAsBlocks() + " | " + indexItem.getMaxKeyValue() + "]");
+          return indexItem.getWaitTimeAsBlocks();
+        }
+        
+      }
+
+      //If we somehow didn't find our value, then we've got a big problem, throw an error
+      throw new RuntimeException("Malformed Index Block.  Search Key could not be found correctly");
+    }
   }
   
   /* (non-Javadoc)

@@ -11,7 +11,9 @@ import org.junit.Test;
 
 import com.umkc.bcast.BroadcastBuilder;
 import com.umkc.bcast.data.Block;
+import com.umkc.bcast.data.BlockType;
 import com.umkc.bcast.data.DataBlock;
+import com.umkc.bcast.data.IndexBlock;
 import com.umkc.bcast.data.mock.MockDataBlock;
 import com.umkc.bcast.util.ClusteredBroadcastBuilder;
 import com.umkc.bcast.util.FlatBroadcastBuilder;
@@ -68,6 +70,20 @@ public class TestBroadcastGeneration {
     //  System.out.println (curBlock.getBlockID());
     
     assertTrue("The bcast size should be 312", bcast.size() == 312);
+    
+    //TEST Access - Picking a GlobalIndex Block
+    IndexBlock indexBlock = (IndexBlock)bcast.get(36);
+    //System.out.println (indexBlock);
+
+    assertTrue("Search term 'wiggle' should be found in block 'cyclone'", indexBlock.getNextReadOffset("wiggle") == 191);
+    assertTrue("Search term 'apple' should be found in block 'cyclone'", indexBlock.getNextReadOffset("apple") == 191);
+    assertTrue("Search term 'melon' should be found in block 'sour'", indexBlock.getNextReadOffset("melon") == 95);
+    assertTrue("Search term 'deed' should be found in block 'dynamic'", indexBlock.getNextReadOffset("deed") == 0);
+    assertTrue("Search term 'freak' should be found in block 'gyrate'", indexBlock.getNextReadOffset("freak") == 23);
+    
+    //Now we test a few lookups, to track the navigation through the index
+    assertTrue("I expect this seach to complete", executeFlatSearch(bcast, "ninja"));
+    assertTrue("I expect this seach to complete", executeFlatSearch(bcast, "cellular"));
   }
   
   /**
@@ -126,6 +142,19 @@ public class TestBroadcastGeneration {
     //  System.out.println (curBlock.getBlockID());
     
     assertTrue("The bcast size should be 364", bcast.size() == 364);
+
+    //TEST Access - Picking a GlobalIndex Block
+    IndexBlock indexBlock = (IndexBlock)bcast.get(42);
+    //System.out.println (indexBlock);
+
+    assertTrue("Search term 'wiggle' should be found in block 'xerox'", indexBlock.getNextReadOffset("wiggle") == 97);
+    assertTrue("Search term 'apple' should be found in block 'cyclone'", indexBlock.getNextReadOffset("apple") == 286);
+    assertTrue("Search term 'melon' should be found in block 'xerox'", indexBlock.getNextReadOffset("melon") == 97);
+    assertTrue("Search term 'deed' should be found in block 'divide'", indexBlock.getNextReadOffset("deed") == 0);
+    assertTrue("Search term 'freak' should be found in block 'juniper'", indexBlock.getNextReadOffset("freak") == 34);
+
+    assertTrue("I expect this seach to complete", executeFlatSearch(bcast, "ninja"));
+    assertTrue("I expect this seach to complete", executeFlatSearch(bcast, "cellular"));
   }
   
   /**
@@ -174,6 +203,21 @@ public class TestBroadcastGeneration {
     //  System.out.println (curBlock.getBlockID());
     
     assertTrue("The bcast size should be 864", bcast.size() == 864);
+    
+    //TEST Access - Picking a GlobalIndex Block
+    IndexBlock indexBlock = (IndexBlock)bcast.get(36);
+    //System.out.println (indexBlock);
+    
+    assertTrue("Search term 'ALPHA'|'wiggle' should be found in block 'zone'", indexBlock.getNextReadOffset("ALPHA", "wiggle") == 191);
+    assertTrue("Search term 'GAMMA'|'wiggle' should be found in cluster 'GAMMA'", indexBlock.getNextReadOffset("GAMMA", "wiggle") == 395);
+    assertTrue("Search term 'ALPHA'|'apple' should be found in cluster 'ALPHA'", indexBlock.getNextReadOffset("ALPHA", "apple") == 827);
+    assertTrue("Search term 'ALPHA'|'freak' should be found in block 'gyrate'", indexBlock.getNextReadOffset("ALPHA", "freak") == 23);
+
+    //Now we test a few lookups, to track the navigation through the index
+    assertTrue("I expect this seach to complete", executeClusterSearch(bcast, "ALPHA", "ninja"));
+    assertTrue("I expect this seach to complete", executeClusterSearch(bcast, "GAMMA", "cellular"));
+    assertTrue("I expect this seach to complete", executeClusterSearch(bcast, "BETA", "681275871041"));
+    assertTrue("I expect this seach to complete", executeClusterSearch(bcast, "DELTA", "171983567834"));
   }
   
   /**
@@ -222,6 +266,155 @@ public class TestBroadcastGeneration {
     //  System.out.println (curBlock.getBlockID());
     
     assertTrue("The bcast size should be 1008", bcast.size() == 1008);
+
+    //TEST Access - Picking a GlobalIndex Block
+    IndexBlock indexBlock = (IndexBlock)bcast.get(42);
+    //System.out.println (indexBlock);
+    
+    assertTrue("Search term 'ALPHA'|'wiggle' should be found in block 'xerox'", indexBlock.getNextReadOffset("ALPHA", "wiggle") == 97);
+    assertTrue("Search term 'GAMMA'|'wiggle' should be found in cluster 'GAMMA'", indexBlock.getNextReadOffset("GAMMA", "wiggle") == 461);
+    assertTrue("Search term 'ALPHA'|'apple' should be found in cluster 'ALPHA'", indexBlock.getNextReadOffset("ALPHA", "apple") == 965);
+    assertTrue("Search term 'ALPHA'|'freak' should be found in block 'juniper'", indexBlock.getNextReadOffset("ALPHA", "freak") == 34);
+  }
+  
+  /**
+   * Helper method to find a given search key in our bcast given a random starting point.
+   * 
+   * @param bcast The broadcast to search in
+   * @param searchKey The search key we want to find in the broadcast
+   * 
+   * @return true if the search terminated successfully (found) or false if not (not found or failed)
+   */
+  private boolean executeFlatSearch(List<Block> bcast, String searchKey) {
+    Random randomInt = new Random();
+    int searchPos    = randomInt.nextInt(bcast.size());
+    int accessTime   = 1;
+    int tuningTime   = 1;
+    int dozeBlocks   = 0;
+    
+    System.out.println ("--------------------------------------------------");
+    System.out.println ("Beginning search for term '" + searchKey + "'...");
+    System.out.println ("Begin Broadcast at position " + (searchPos + 1) + ": " + bcast.get(searchPos).getBlockID());
+    
+    dozeBlocks = bcast.get(searchPos).getNextIndexOffset();
+    System.out.println ("  Doze blocks till next GlobalIndex: " + dozeBlocks);
+    
+    searchPos = (searchPos + dozeBlocks + 1) % bcast.size();
+    System.out.println ("  Next read at block: " + (searchPos + 1));
+    accessTime += dozeBlocks;
+    
+    while(true) {
+      Block curBlock = bcast.get(searchPos);
+      System.out.println ("Reading bcast block at position " + (searchPos + 1) + ": " + curBlock.getBlockID());
+      //If it's an index block, read the block to get the next read location
+      if ((curBlock.getBlockType() == BlockType.GLOBAL_FLAT_INDEX_BLOCK) || (curBlock.getBlockType() == BlockType.LOCAL_INDEX_BLOCK)) {
+        accessTime++;
+        tuningTime++;
+        
+        //DEBUG
+        //System.out.println (curBlock.toString());
+        
+        dozeBlocks = ((IndexBlock)curBlock).getNextReadOffset(searchKey);
+        //Rare, but in case we provide a search term that doesn't exist in the local index, 
+        //we could get a -1 result.  In that case, fail out.
+        if (dozeBlocks == -1) {
+          System.out.println ("The search term we want wasn't found in the local index...");
+          return false;
+        }
+        
+        System.out.println ("  Doze blocks until next read: " + dozeBlocks);
+        searchPos = (searchPos + dozeBlocks + 1) % bcast.size();
+        System.out.println ("  Next read at block: " + (searchPos + 1));
+        accessTime += dozeBlocks;
+        
+      //If it's a data block at this point, that means we've found what we wanted  
+      } else if (curBlock.getBlockType() == BlockType.DATA_BLOCK) {
+        accessTime++;
+        tuningTime++;
+
+        //DEBUG
+        System.out.println ("Total Access Time (in Blocks): " + accessTime);
+        System.out.println ("Total Tuning Time (in Blocks): " + tuningTime);
+        
+        return true;
+      } else {
+        System.out.println ("I shouldn't have hit a block of this type: " + curBlock.getBlockType());
+        return false;
+      }
+    }
+  }
+
+  /**
+   * Helper method to find a given search key in our bcast given a random starting point.
+   * 
+   * @param bcast The broadcast to search in
+   * @param clusterGroup the cluster the search key belongs to
+   * @param searchKey The search key we want to find in the broadcast
+   * 
+   * @return true if the search terminated successfully (found) or false if not (not found or failed)
+   */
+  private boolean executeClusterSearch(List<Block> bcast, String clusterGroup, String searchKey) {
+    Random randomInt = new Random();
+    int searchPos    = randomInt.nextInt(bcast.size());
+    int accessTime   = 1;
+    int tuningTime   = 1;
+    int dozeBlocks   = 0;
+    
+    System.out.println ("--------------------------------------------------");
+    System.out.println ("Beginning search for term '" + clusterGroup + "'|'" + searchKey + "'...");
+    System.out.println ("Begin Broadcast at position " + (searchPos + 1) + ": " + bcast.get(searchPos).getBlockID());
+    
+    dozeBlocks = bcast.get(searchPos).getNextIndexOffset();
+    System.out.println ("  Doze blocks till next GlobalIndex: " + dozeBlocks);
+    
+    searchPos = (searchPos + dozeBlocks + 1) % bcast.size();
+    System.out.println ("  Next read at block: " + (searchPos + 1));
+    accessTime += dozeBlocks;
+    
+    while(true) {
+      Block curBlock = bcast.get(searchPos);
+      System.out.println ("Reading bcast block at position " + (searchPos + 1) + ": " + curBlock.getBlockID());
+      //If it's an index block, read the block to get the next read location
+      if ((curBlock.getBlockType() == BlockType.GLOBAL_CLUSTER_INDEX_BLOCK) || (curBlock.getBlockType() == BlockType.LOCAL_INDEX_BLOCK)) {
+        accessTime++;
+        tuningTime++;
+        
+        //DEBUG
+        //System.out.println (curBlock.toString());
+        
+        //In the localIndex block, we only need the search key, not the cluster
+        if (curBlock.getBlockType() == BlockType.GLOBAL_CLUSTER_INDEX_BLOCK)
+          dozeBlocks = ((IndexBlock)curBlock).getNextReadOffset(clusterGroup, searchKey);
+        else dozeBlocks = ((IndexBlock)curBlock).getNextReadOffset(searchKey);
+        
+        //Rare, but in case we provide a search term that doesn't exist in the local index, 
+        //we could get a -1 result.  In that case, fail out.
+        if (dozeBlocks == -1) {
+          System.out.println ("The search term we want wasn't found in the local index...");
+          return false;
+        }
+        
+        System.out.println ("  Doze blocks until next read: " + dozeBlocks);
+        searchPos = (searchPos + dozeBlocks + 1) % bcast.size();
+        System.out.println ("  Next read at block: " + (searchPos + 1));
+        accessTime += dozeBlocks;
+        
+      //If it's a data block at this point, that means we've found what we wanted  
+      } else if (curBlock.getBlockType() == BlockType.DATA_BLOCK) {
+        accessTime++;
+        tuningTime++;
+
+        //DEBUG
+        System.out.println ("Total Blocks in Broadcast:     " + bcast.size());
+        System.out.println ("Total Access Time (in Blocks): " + accessTime);
+        System.out.println ("Total Tuning Time (in Blocks): " + tuningTime);
+        
+        return true;
+      } else {
+        System.out.println ("I shouldn't have hit a block of this type: " + curBlock.getBlockType());
+        return false;
+      }
+    }
   }
 
   private ArrayList<DataBlock> generateDataBlocks(String clusterGroup) {

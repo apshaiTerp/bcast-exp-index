@@ -28,7 +28,7 @@ public class LocalIndexBlock extends IndexBlock {
   @Override
   public int getNextReadOffset(String searchKey) {
     //DEBUG
-    System.out.println ("Reading " + blockID + ".  Looking for where " + searchKey + " should be found...");
+    //System.out.println ("Reading " + blockID + ".  Looking for where " + searchKey + " should be found...");
     
     for (LocalIndexArrayItem localItem : localIndex) {
       if (localItem.getBlockKeyValue().compareTo(searchKey) == 0)
