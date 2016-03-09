@@ -32,6 +32,10 @@ import com.umkc.bcast.util.FlatBroadcastBuilder;
  * The process is reasonably similar whether generating a flat or clustered index, though both will
  * be demonstrated in this test.
  * 
+ * <p>Please note that data sets should be sorted by the searchable criteria.  Currently all tests
+ * run by this class use the simpler dataKey as opposed to the unique key, though the unique key could
+ * easily be used if we sorted the dataset by that key before generating the bcast.
+ * 
  * @author ac010168
  *
  */
