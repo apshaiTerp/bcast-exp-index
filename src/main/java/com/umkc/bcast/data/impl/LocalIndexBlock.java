@@ -46,9 +46,22 @@ public class LocalIndexBlock extends IndexBlock {
   /**
    * Method to add new entries to the to the index.
    * 
-   * @param indexEntry
+   * @param indexEntry The next index entry to be added to this local index.
    */
   public void addIndexRow(LocalIndexArrayItem indexEntry) {
     localIndex.add(indexEntry);
+  }
+  
+  /**
+   * Override of the toString method to assist with troubleshooting/debugging.
+   */
+  @Override
+  public String toString() {
+    String result = " + " + blockID + "  [ Indexed Blocks: " + localIndex.size() + "]\n";
+    for (LocalIndexArrayItem indexItem : localIndex)
+      result += "    [" + indexItem.getWaitTimeAsBlocks() + " | " + indexItem.getBlockKeyValue() + "]\n";
+    result += "   Next Global Index Block: " + nextIndexOffset + "\n";
+    
+    return result;
   }
 }

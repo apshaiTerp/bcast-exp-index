@@ -49,7 +49,7 @@ public class Bucket {
   /**
    * Add a new data block to the bucket.
    * 
-   * @param dataBlock
+   * @param dataBlock The dataBlock to be added
    */
   public void addDataBlock(DataBlock dataBlock) {
     dataBlocks.add(dataBlock);
@@ -92,7 +92,7 @@ public class Bucket {
   /**
    * Assign the constructed global index block to this bucket.
    * 
-   * @param globalIndex
+   * @param globalIndex the global index block to be assigned to this bucket
    */
   public void assignGlobalIndex(IndexBlock globalIndex) {
     this.globalIndex = globalIndex;
@@ -117,7 +117,7 @@ public class Bucket {
   /**
    * Helper method to flatten out the bucket to be added to a finalized bcast list.
    * 
-   * @return
+   * @return a flattened single array of blocks
    */
   public ArrayList<Block> flattenBucket() {
     ArrayList<Block> blocks = new ArrayList<Block>(dataBlocks.size() + 2);
@@ -126,5 +126,22 @@ public class Bucket {
     blocks.addAll(dataBlocks);
     
     return blocks;
+  }
+  /*
+   * (non-Javadoc)
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    String result = "Printing Bucket:\n";
+    
+    result += globalIndex.toString();
+    
+    result += localIndex.toString();
+    
+    for (DataBlock curBlock : dataBlocks)
+      result += curBlock.toString();
+    
+    return result;
   }
 }

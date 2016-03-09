@@ -23,7 +23,12 @@ public class GlobalIndexArrayItem {
   /** The maximum key value stored within this range of buckets */
   private String maxKeyValue;
 
-  /** Simple Constructor.  Will need to have range values computed externally */
+  /** Simple Constructor.  Will need to have range values computed externally 
+   * 
+   * @param waitTimeAsBuckets The wait time in units of buckets
+   * @param waitTimeAsBlocks  The wait time in units of blocks
+   * @param maxKeyValue       The max Key value contained within this index range
+   */
   public GlobalIndexArrayItem(int waitTimeAsBuckets, int waitTimeAsBlocks, String maxKeyValue) {
     this.waitTimeAsBuckets = waitTimeAsBuckets;
     this.waitTimeAsBlocks  = waitTimeAsBlocks;
@@ -34,9 +39,9 @@ public class GlobalIndexArrayItem {
    * This method returns true if the current searching key is less than or equal to the maxKeyValue
    * for this index range
    * 
-   * @param searchKey
+   * @param searchKey The search key we want to find
    * 
-   * @return
+   * @return true if the searchKey value is lexically before the end of this index entry, false if not.
    */
   public boolean containsKey(String searchKey) {
     if (searchKey.compareTo(maxKeyValue) <= 0)

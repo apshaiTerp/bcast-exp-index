@@ -57,7 +57,7 @@ public class GlobalFlatIndexBlock extends IndexBlock {
   /**
    * Basic Constructor with the firstBucketValue provided.
    * 
-   * @param firstBucketValue
+   * @param firstBucketValue The first key value contained in the local range of this bucket.
    */
   public GlobalFlatIndexBlock(String firstBucketValue) {
     blockType             = BlockType.GLOBAL_FLAT_INDEX_BLOCK;
@@ -86,7 +86,10 @@ public class GlobalFlatIndexBlock extends IndexBlock {
     throw new RuntimeException ("This version of getNextReadOffset is not supported for this Index type");
   }
   
-  /** Helper method to add a new index row to the exponentialIndex. */
+  /** Helper method to add a new index row to the exponentialIndex.
+   * 
+   * @param indexEntry The next index entry to be added to this index list.
+   */
   public void addIndexRow(GlobalIndexArrayItem indexEntry) {
     exponentialIndex.add(indexEntry);
   }
@@ -103,5 +106,19 @@ public class GlobalFlatIndexBlock extends IndexBlock {
    */
   public void setFirstBucketValue(String firstBucketValue) {
     this.firstBucketValue = firstBucketValue;
+  }
+
+  /**
+   * Override of the toString method to assist with troubleshooting/debugging.
+   */
+  @Override
+  public String toString() {
+    String result = " + " + blockID + "  [ Indexed Blocks: " + exponentialIndex.size() + "]\n";
+    result += "   FirstBucketValue: " + firstBucketValue + "\n";
+    for (GlobalIndexArrayItem indexItem : exponentialIndex)
+      result += "    [" + indexItem.getWaitTimeAsBuckets() + " | " +  + indexItem.getWaitTimeAsBlocks() + " | " + indexItem.getMaxKeyValue() + "]\n";
+    result += "   Next Global Index Block: " + nextIndexOffset + "\n";
+    
+    return result;
   }
 }

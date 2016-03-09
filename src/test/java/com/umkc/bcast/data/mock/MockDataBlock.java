@@ -20,6 +20,19 @@ public class MockDataBlock extends DataBlock {
     this.uniqueIdentifier    = uniqueIdentifier;
     this.clusterGroup        = clusterGroup;
     this.dataKey             = dataKey;
+    nextIndexOffset          = -1;
+  }
+  
+  /**
+   * Override of the toString method to assist with troubleshooting/debugging.
+   */
+  @Override
+  public String toString() {
+    String result = "   + " + blockID + "  [ " + uniqueIdentifier + " | " + clusterGroup + " : " + dataKey + " ]\n" + 
+                    "    mockDataDescription: " + mockDataDescription + "\n" +
+                    "    mockDataValue:       " + mockDataValue + "\n" + 
+                    "   Next Global Index Block: " + nextIndexOffset + "\n";
+    return result;
   }
 
   /**

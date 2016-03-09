@@ -114,6 +114,11 @@ public class GlobalClusterIndexBlock extends IndexBlock {
     exponentialIndex = new ArrayList<GlobalIndexArrayItem>();
   }
   
+  /**
+   * Basic Constructor.  Use this to initialize basic values and lists.
+   * @param clusterGroup     The cluster group this index block belongs to.
+   * @param firstBucketValue The first key value contained within the subsequent local index block.
+   */
   public GlobalClusterIndexBlock(String clusterGroup, String firstBucketValue) {
     blockType             = BlockType.GLOBAL_CLUSTER_INDEX_BLOCK;
     this.clusterGroup     = clusterGroup;
@@ -143,12 +148,18 @@ public class GlobalClusterIndexBlock extends IndexBlock {
     return -1;
   }
 
-  /** Helper method to add a new index row to the exponentialIndex. */
+  /** Helper method to add a new index row to the exponentialIndex. 
+   * 
+   * @param indexEntry the new index entry for the next occurence of this cluster in the broadcast.
+   */
   public void addClusterIndexRow(GlobalIndexArrayItem indexEntry) {
     clusterIndex.add(indexEntry);
   }
 
-  /** Helper method to add a new index row to the exponentialIndex. */
+  /** Helper method to add a new index row to the exponentialIndex. 
+   * 
+   * @param indexEntry The new index entry for the exponential index within this cluster.
+   */
   public void addExponentialIndexRow(GlobalIndexArrayItem indexEntry) {
     exponentialIndex.add(indexEntry);
   }
@@ -181,4 +192,24 @@ public class GlobalClusterIndexBlock extends IndexBlock {
     this.firstBucketValue = firstBucketValue;
   }
 
+  /**
+   * Override of the toString method to assist with troubleshooting/debugging.
+   */
+  @Override
+  public String toString() {
+    String result = " + " + blockID + "  [ Indexed Blocks: " + (clusterIndex.size() + exponentialIndex.size()) + "]\n";
+    result += "   ClusterGroup:     " + clusterGroup + "\n";
+    result += "   FirstBucketValue: " + firstBucketValue + "\n";
+    
+    result += "   Cluster Index:\n";
+    for (GlobalIndexArrayItem indexItem : clusterIndex)
+      result += "      [" + indexItem.getWaitTimeAsBuckets() + " | " +  + indexItem.getWaitTimeAsBlocks() + " | " + indexItem.getMaxKeyValue() + "]\n";
+    
+    result += "   Exponential Index:\n";
+    for (GlobalIndexArrayItem indexItem : exponentialIndex)
+      result += "      [" + indexItem.getWaitTimeAsBuckets() + " | " +  + indexItem.getWaitTimeAsBlocks() + " | " + indexItem.getMaxKeyValue() + "]\n";
+    result += "   Next Global Index Block: " + nextIndexOffset + "\n";
+    
+    return result;
+  }
 }

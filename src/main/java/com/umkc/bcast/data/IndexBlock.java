@@ -43,7 +43,7 @@ public abstract class IndexBlock extends Block {
    * 
    * <p>This method should be used for clustered searches
    * 
-   * @param clusterGroup The cluster grouping we are looking to search for our key in.
+   * @param searchCluster The cluster grouping we are looking to search for our key in.
    * @param searchKey The key we are hoping to find a location for in this index
    * 
    * @return The number of blocks we can doze through before getting more information about our requested data.

@@ -68,4 +68,15 @@ public abstract class DataBlock extends Block {
   public void setDataKey(String dataKey) {
     this.dataKey = dataKey;
   }
+  
+  /**
+   * Override of the toString method to assist with troubleshooting/debugging.
+   */
+  @Override
+  public String toString() {
+    String result = "   + " + blockID + "  [ " + uniqueIdentifier + " | " + clusterGroup + " : " + dataKey + " ]\n" + 
+                    "    Unknown Contents\n" + 
+                    "   Next Global Index Block: " + nextIndexOffset + "\n";
+    return result;
+  }
 }

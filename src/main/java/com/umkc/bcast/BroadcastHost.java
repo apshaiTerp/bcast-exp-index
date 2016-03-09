@@ -10,7 +10,7 @@ package com.umkc.bcast;
 public class BroadcastHost {
 
   /**
-   * @param args
+   * @param args Command Line Arguments
    */
   public static void main(String[] args) {
     //TODO - Everything
