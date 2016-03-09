@@ -16,6 +16,12 @@ import com.umkc.bcast.data.DataBlock;
  * <p>To do this, we will need to do more with cloning buckets repeated in the bcast
  * in order to prevent object sharing from ruining our index.
  * 
+ * Personal Notes:
+ * While the clustered index portion of things will need to change wildly, the exponential part
+ * within each cluster should work exactly like in the ClusteredBroadcastBuilder class.
+ * It's going to be the figuring out how to track the 'next' occurrence of a cluster and
+ * the associated offsets, along with the replication, that are going to suck.
+ * 
  * @author ac010168
  *
  */

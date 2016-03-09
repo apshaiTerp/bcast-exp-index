@@ -141,11 +141,37 @@ public class GlobalClusterIndexBlock extends IndexBlock {
   @Override
   public int getNextReadOffset(String searchCluster, String searchKey) {
     //DEBUG
-    System.out.println ("Reading " + blockID + ".  Looking for where [" + searchCluster + ", " + searchKey + "] should be found...");
+    //System.out.println ("Reading " + blockID + ".  Looking for where [" + searchCluster + ", " + searchKey + "] should be found...");
     
-    //TODO This is where the real work of parsing the index block takes place.
-    
-    return -1;
+    //The first thing we need to check is whether or not we're in the right cluster.
+    if (searchCluster.equalsIgnoreCase(clusterGroup) && (searchKey.compareTo(firstBucketValue) >= 0)) {
+      //This is a little simpler, since we know the desired entry has to be in the exponential range,
+      //and we don't have to worry about wrapping.  It's either in this index, or the next cluster, which
+      //is handled by the else block
+      for (GlobalIndexArrayItem indexItem : exponentialIndex) {
+        if (searchKey.compareTo(indexItem.getMaxKeyValue()) <= 0) {
+          //DEBUG
+          //System.out.println ("Found my hit in [" + indexItem.getWaitTimeAsBuckets() + " | " +  + indexItem.getWaitTimeAsBlocks() + " | " + indexItem.getMaxKeyValue() + "]");
+          return indexItem.getWaitTimeAsBlocks();
+        }
+      }
+
+      //If we somehow didn't find our value, then we've got a big problem, throw an error
+      throw new RuntimeException("Malformed Index Block.  Search Key could not be found correctly");
+    } else {
+      //If the search is for a different cluster (or the next occurrence of this cluster), we only need 
+      //to find that cluster and doze.
+      for (GlobalIndexArrayItem indexItem : clusterIndex) {
+        if (indexItem.getMaxKeyValue().equalsIgnoreCase(searchCluster)) {
+          //DEBUG
+          //System.out.println ("Found my hit in [" + indexItem.getWaitTimeAsBuckets() + " | " +  + indexItem.getWaitTimeAsBlocks() + " | " + indexItem.getMaxKeyValue() + "]");
+          return indexItem.getWaitTimeAsBlocks();
+        }
+      }
+      
+      //If we somehow didn't find our cluster, then we've got a big problem, throw an error
+      throw new RuntimeException("Malformed Request.  Desired Cluster could not be found correctly");
+    }
   }
 
   /** Helper method to add a new index row to the exponentialIndex. 

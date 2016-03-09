@@ -1,5 +1,6 @@
 package com.umkc.bcast.data.mock;
 
+import com.umkc.bcast.data.BlockType;
 import com.umkc.bcast.data.DataBlock;
 
 /**
@@ -20,6 +21,7 @@ public class MockDataBlock extends DataBlock {
     this.uniqueIdentifier    = uniqueIdentifier;
     this.clusterGroup        = clusterGroup;
     this.dataKey             = dataKey;
+    blockType                = BlockType.DATA_BLOCK;
     nextIndexOffset          = -1;
   }
   
