@@ -37,31 +37,100 @@ import com.umkc.bcast.util.FlatBroadcastBuilder;
  */
 public class TestBroadcastGeneration {
   
+  /**
+   * Simple Test method to create a flat broadcast based on a 260 item data set
+   * using an exponentFactor of 2 and a bucketSize of 10.
+   */
   @Test
-  public void testSimpleFlatBcast() {
-    System.out.println ("**********  testSimpleFlatBcast()  **********");
+  public void testSimpleFlatBcast2By10() {
+    System.out.println ("**********  testSimpleFlatBcast(2, 10)  **********");
     
     List<DataBlock> testBlocks = null;
     
     testBlocks = generateDataBlocks("ALPHA");
     
-    BroadcastBuilder builder = new FlatBroadcastBuilder(3, 10, false);
+    BroadcastBuilder builder = new FlatBroadcastBuilder(2, 10, false);
     builder.assignDataBlocks(testBlocks);
     
     builder.constructGlobalIndices();
     
     List<Block> bcast = builder.assembleBcast();
     
-    System.out.println ("--  The final bcast structure for (3, 10)  --");
-    for (Block curBlock : bcast)
-      System.out.println (curBlock.getBlockID());
+    System.out.println ("--  The final bcast structure for (2, 10)  --");
+    System.out.println ("Total bcast blocks:                    " + bcast.size());
+    System.out.println ("Initial data blocks in bcast:          " + testBlocks.size());
+    System.out.println ("Number of index blocks added to bcast: " + (bcast.size() - testBlocks.size()));
+    //for (Block curBlock : bcast)
+    //  System.out.println (curBlock.getBlockID());
     
-    assertTrue("The world is ending", true);
+    assertTrue("The bcast size should be 312", bcast.size() == 312);
   }
   
+  /**
+   * Simple Test method to create a flat broadcast based on a 260 item data set
+   * using an exponentFactor of 2 and a bucketSize of 2.
+   */
   @Test
-  public void testClusteredNonSkewedBcast() {
-    System.out.println ("**********  testClusteredNonSkewedBcast()  **********");
+  public void testSimpleFlatBcast2By2() {
+    System.out.println ("**********  testSimpleFlatBcast(2, 2)  **********");
+    
+    List<DataBlock> testBlocks = null;
+    
+    testBlocks = generateDataBlocks("ALPHA");
+    
+    BroadcastBuilder builder = new FlatBroadcastBuilder(2, 2, false);
+    builder.assignDataBlocks(testBlocks);
+    
+    builder.constructGlobalIndices();
+    
+    List<Block> bcast = builder.assembleBcast();
+    
+    System.out.println ("--  The final bcast structure for (2, 2)  --");
+    System.out.println ("Total bcast blocks:                    " + bcast.size());
+    System.out.println ("Initial data blocks in bcast:          " + testBlocks.size());
+    System.out.println ("Number of index blocks added to bcast: " + (bcast.size() - testBlocks.size()));
+    //for (Block curBlock : bcast)
+    //  System.out.println (curBlock.getBlockID());
+    
+    assertTrue("The bcast size should be 520", bcast.size() == 520);
+  }
+  
+  /**
+   * Simple Test method to create a flat broadcast based on a 260 item data set
+   * using an exponentFactor of 3 and a bucketSize of 5.
+   */
+  @Test
+  public void testSimpleFlatBcast3By5() {
+    System.out.println ("**********  testSimpleFlatBcast(3, 5)  **********");
+    
+    List<DataBlock> testBlocks = null;
+    
+    testBlocks = generateDataBlocks("ALPHA");
+    
+    BroadcastBuilder builder = new FlatBroadcastBuilder(3, 5, false);
+    builder.assignDataBlocks(testBlocks);
+    
+    builder.constructGlobalIndices();
+    
+    List<Block> bcast = builder.assembleBcast();
+    
+    System.out.println ("--  The final bcast structure for (3, 5)  --");
+    System.out.println ("Total bcast blocks:                    " + bcast.size());
+    System.out.println ("Initial data blocks in bcast:          " + testBlocks.size());
+    System.out.println ("Number of index blocks added to bcast: " + (bcast.size() - testBlocks.size()));
+    //for (Block curBlock : bcast)
+    //  System.out.println (curBlock.getBlockID());
+    
+    assertTrue("The bcast size should be 364", bcast.size() == 364);
+  }
+  
+  /**
+   * Simple Test method to create a clustered broadcast based on 4 clusters with a combined
+   * total of 720 data blocks and using an exponentFactor of 2 and a bucketSize of 10.
+   */
+  @Test
+  public void testClusteredNonSkewedBcast2By10() {
+    System.out.println ("**********  testClusteredNonSkewedBcast(2, 10)  **********");
 
     List<DataBlock> testBlocks1 = null;
     List<DataBlock> testBlocks2 = null;
@@ -92,12 +161,65 @@ public class TestBroadcastGeneration {
     
     List<Block> bcast = builder.assembleBcast();
     System.out.println ("--  The final bcast structure for (2, 10)  --");
-    for (Block curBlock : bcast)
-      System.out.println (curBlock.getBlockID());
-
-    assertTrue("The world is ending", true);
+    System.out.println ("Total bcast blocks:                    " + bcast.size());
+    System.out.println ("Initial data blocks in bcast:          " + 
+        (testBlocks1.size() + testBlocks2.size() + testBlocks3.size() + testBlocks4.size()));
+    System.out.println ("Number of index blocks added to bcast: " + 
+        (bcast.size() - testBlocks1.size() - testBlocks2.size() - testBlocks3.size() - testBlocks4.size()));
+    //for (Block curBlock : bcast)
+    //  System.out.println (curBlock.getBlockID());
+    
+    assertTrue("The bcast size should be 864", bcast.size() == 864);
   }
   
+  /**
+   * Simple Test method to create a clustered broadcast based on 4 clusters with a combined
+   * total of 720 data blocks and using an exponentFactor of 2 and a bucketSize of 10.
+   */
+  @Test
+  public void testClusteredNonSkewedBcast3By5() {
+    System.out.println ("**********  testClusteredNonSkewedBcast(3, 5)  **********");
+
+    List<DataBlock> testBlocks1 = null;
+    List<DataBlock> testBlocks2 = null;
+    List<DataBlock> testBlocks3 = null;
+    List<DataBlock> testBlocks4 = null;
+    
+    testBlocks1 = generateDataBlocks("ALPHA");
+    testBlocks2 = generateNumberDataBlocks("BETA");
+    testBlocks3 = generateDataBlocks("GAMMA");
+    testBlocks4 = generateNumberDataBlocks("DELTA");
+    
+    BroadcastBuilder builder = new ClusteredBroadcastBuilder(3, 5, false);
+    
+    builder.assignDataBlocks(testBlocks1);
+    builder.assignDataBlocks(testBlocks2);
+    builder.assignDataBlocks(testBlocks3);
+    builder.assignDataBlocks(testBlocks4);
+    
+    List<String> clusterOrder = new ArrayList<String>(2);
+    clusterOrder.add("ALPHA");
+    clusterOrder.add("BETA");
+    clusterOrder.add("GAMMA");
+    clusterOrder.add("DELTA");
+    
+    builder.addClusterKeys(clusterOrder);
+    
+    builder.constructGlobalIndices();
+    
+    List<Block> bcast = builder.assembleBcast();
+    System.out.println ("--  The final bcast structure for (3, 5)  --");
+    System.out.println ("Total bcast blocks:                    " + bcast.size());
+    System.out.println ("Initial data blocks in bcast:          " + 
+        (testBlocks1.size() + testBlocks2.size() + testBlocks3.size() + testBlocks4.size()));
+    System.out.println ("Number of index blocks added to bcast: " + 
+        (bcast.size() - testBlocks1.size() - testBlocks2.size() - testBlocks3.size() - testBlocks4.size()));
+    //for (Block curBlock : bcast)
+    //  System.out.println (curBlock.getBlockID());
+    
+    assertTrue("The bcast size should be 1008", bcast.size() == 1008);
+  }
+
   private ArrayList<DataBlock> generateDataBlocks(String clusterGroup) {
     ArrayList<DataBlock> testBlocks = new ArrayList<DataBlock>();
 

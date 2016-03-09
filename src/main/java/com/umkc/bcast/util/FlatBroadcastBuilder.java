@@ -54,16 +54,16 @@ public class FlatBroadcastBuilder extends BroadcastBuilder {
       throw new RuntimeException("WARNING!  The size of this batch does not evenly fit our bucket size!");
     
     //DEBUG
-    System.out.println ("Initial Number of Buckets:     " + buckets.size());
-    System.out.println ("Initial Number of Data Blocks: " + dataBlockIndex);
-    System.out.println ("Number of new Data Blocks:     " + dataBlocks.size());
-    System.out.println ("Bucket Size:                   " + bucketSize);
+    //System.out.println ("Initial Number of Buckets:     " + buckets.size());
+    //System.out.println ("Initial Number of Data Blocks: " + dataBlockIndex);
+    //System.out.println ("Number of new Data Blocks:     " + dataBlocks.size());
+    //System.out.println ("Bucket Size:                   " + bucketSize);
     
     //Begin breaking the data set down into buckets
     Bucket curBucket = null;
     for (int loopCtr = 0; loopCtr < dataBlocks.size(); loopCtr++) {
       //DEBUG
-      System.out.println ("Processing Block " + loopCtr);
+      //System.out.println ("Processing Block " + loopCtr);
       
       //Check to see if we need to start a new bucket
       if ((loopCtr % bucketSize) == 0) {
@@ -79,15 +79,16 @@ public class FlatBroadcastBuilder extends BroadcastBuilder {
       
       //If we've completed a bucket, time to work through the construction steps
       if ((dataBlockIndex == dataBlocks.size()) || ((dataBlockIndex % bucketSize) == 0)) {
-        System.out.println ("Finalizing Bucket " + bucketIndex + "...");
+        //DEBUG
+        //System.out.println ("Finalizing Bucket " + bucketIndex + "...");
         curBucket.constructLocalIndex();
         buckets.add(curBucket);
       }
     }
     
     //DEBUG
-    System.out.println ("Current Number of Buckets:     " + buckets.size());
-    System.out.println ("Current Number of Data Blocks: " + dataBlockIndex);
+    //System.out.println ("Current Number of Buckets:     " + buckets.size());
+    //System.out.println ("Current Number of Data Blocks: " + dataBlockIndex);
   }
   
   /*
@@ -134,7 +135,8 @@ public class FlatBroadcastBuilder extends BroadcastBuilder {
     //END DEBUG ---------------------------------------- */
     
     for (int bucketPos = 0; bucketPos < buckets.size(); bucketPos++) {
-      System.out.println ("Tackling Bucket " + (bucketPos + 1) + "...");
+      //DEBUG
+      //System.out.println ("Tackling Bucket " + (bucketPos + 1) + "...");
       Bucket curBucket = buckets.get(bucketPos);
       
       GlobalFlatIndexBlock indexBlock = new GlobalFlatIndexBlock(curBucket.getFirstBucketKey());
@@ -150,6 +152,7 @@ public class FlatBroadcastBuilder extends BroadcastBuilder {
       
       //All the middle buckets we can handle the same way.
       for (int i = 3; i < expBuckets.size(); i++) {
+        //DEBUG
         //System.out.println ("Range: [" + expBuckets.get(i - 1) + " - " + (expBuckets.get(i) - 1) + "]");
         endBucketPos = (bucketPos + expBuckets.get(i) - 1) % buckets.size();
         GlobalIndexArrayItem indexItem = new GlobalIndexArrayItem(expBuckets.get(i - 1), (expBuckets.get(i - 1) * (bucketSize + 2)) - 1, 
@@ -168,7 +171,7 @@ public class FlatBroadcastBuilder extends BroadcastBuilder {
       curBucket.updateNextIndexOffsets();
       
       //DEBUG
-      System.out.println (curBucket.toString());
+      //System.out.println (curBucket.toString());
     }
   }
   
@@ -179,15 +182,16 @@ public class FlatBroadcastBuilder extends BroadcastBuilder {
   @Override
   public List<Block> assembleBcast() {
     //DEBUG
-    System.out.println ("Assembling the bcast");
-    System.out.println ("Expected final bcast size: " + (buckets.size() * (bucketSize + 2)));
+    //System.out.println ("Assembling the bcast");
+    //System.out.println ("Expected final bcast size: " + (buckets.size() * (bucketSize + 2)));
     
     //Initialize the ArrayList to be the length of all the buckets
     List<Block> bcast = new ArrayList<Block>(buckets.size() * (bucketSize + 2));
     for (Bucket curBucket : buckets)
       bcast.addAll(curBucket.flattenBucket());
     
-    System.out.println ("Actual final bcast size:   " + bcast.size());
+    //DEBUG
+    //System.out.println ("Actual final bcast size:   " + bcast.size());
     
     return bcast;
   }

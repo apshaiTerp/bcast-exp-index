@@ -64,10 +64,10 @@ public class ClusteredBroadcastBuilder extends BroadcastBuilder {
       throw new RuntimeException("WARNING!  The size of this batch does not evenly fit our bucket size!");
     
     //DEBUG
-    System.out.println ("Initial Number of Buckets:     " + bucketIndex);
-    System.out.println ("Initial Number of Data Blocks: " + dataBlockIndex);
-    System.out.println ("Number of new Data Blocks:     " + dataBlocks.size());
-    System.out.println ("Bucket Size:                   " + bucketSize);
+    //System.out.println ("Initial Number of Buckets:     " + bucketIndex);
+    //System.out.println ("Initial Number of Data Blocks: " + dataBlockIndex);
+    //System.out.println ("Number of new Data Blocks:     " + dataBlocks.size());
+    //System.out.println ("Bucket Size:                   " + bucketSize);
     
     //First, we need to enforce the single cluster per submission rule
     String clusterGroup = dataBlocks.get(0).getClusterGroup();
@@ -86,7 +86,7 @@ public class ClusteredBroadcastBuilder extends BroadcastBuilder {
     Bucket curBucket = null;
     for (int loopCtr = 0; loopCtr < dataBlocks.size(); loopCtr++) {
       //DEBUG
-      System.out.println ("Processing Block " + loopCtr);
+      //System.out.println ("Processing Block " + loopCtr);
       
       //Check to see if we need to start a new bucket
       if ((loopCtr % bucketSize) == 0) {
@@ -102,7 +102,8 @@ public class ClusteredBroadcastBuilder extends BroadcastBuilder {
       
       //If we've completed a bucket, time to work through the construction steps
       if ((dataBlockIndex == dataBlocks.size()) || ((dataBlockIndex % bucketSize) == 0)) {
-        System.out.println ("Finalizing Bucket " + bucketIndex + "...");
+        //DEBUG
+        //System.out.println ("Finalizing Bucket " + bucketIndex + "...");
         curBucket.constructLocalIndex();
         curCluster.add(curBucket);
       }
@@ -111,14 +112,14 @@ public class ClusteredBroadcastBuilder extends BroadcastBuilder {
     clusters.put(clusterGroup, curCluster);
     
     //DEBUG
-    System.out.println ("Current Number of Buckets:     " + bucketIndex);
-    System.out.println ("Current Number of Data Blocks: " + dataBlockIndex);
-
+    //System.out.println ("Current Number of Buckets:     " + bucketIndex);
+    //System.out.println ("Current Number of Data Blocks: " + dataBlockIndex);
   }
 
   /* (non-Javadoc)
    * @see com.umkc.bcast.BroadcastBuilder#addClusterKeys(java.util.List)
    */
+  @SuppressWarnings("unused")
   @Override
   public void addClusterKeys(List<String> clusterOrder) {
     this.clusterOrder = clusterOrder;
@@ -135,8 +136,9 @@ public class ClusteredBroadcastBuilder extends BroadcastBuilder {
     if (clusterOrder.size() != clusters.keySet().size())
       throw new RuntimeException("The number of clusters in the order does not match the number found in the existing data set.");
     
-    System.out.println ("Total Bucket Count: " + totalBucketCount);
-    System.out.println ("BucketIndex Count:  " + bucketIndex);
+    //DEBUG
+    //System.out.println ("Total Bucket Count: " + totalBucketCount);
+    //System.out.println ("BucketIndex Count:  " + bucketIndex);
   }
 
   /* (non-Javadoc)
@@ -165,29 +167,31 @@ public class ClusteredBroadcastBuilder extends BroadcastBuilder {
     }
     
     //DEBUG
-    System.out.println ("Setting initial cluster offsets:");
-    for (int i = 0; i < clusterOrder.size(); i++) {
-      System.out.println ("  clusterGroup: " + clusterOrder.get(i) + ":  [buckets: " + 
-          clusters.get(clusterOrder.get(i)).size() + " | initialOffset: " + clusterOffsets.get(i) + "]");
-    }
+    //System.out.println ("Setting initial cluster offsets:");
+    //for (int i = 0; i < clusterOrder.size(); i++) {
+    //  System.out.println ("  clusterGroup: " + clusterOrder.get(i) + ":  [buckets: " + 
+    //      clusters.get(clusterOrder.get(i)).size() + " | initialOffset: " + clusterOffsets.get(i) + "]");
+    //}
     
     //For all clusters
     for (int clusterPos = 0; clusterPos < clusterOrder.size(); clusterPos++) {
       //DEBUG
-      System.out.println ("Processing Cluster " + clusterOrder.get(clusterPos));
+      //System.out.println ("Processing Cluster " + clusterOrder.get(clusterPos));
       
       //Get the list of all buckets under this cluster
       int bucketPos = 0;
       for (Bucket curBucket : clusters.get(clusterOrder.get(clusterPos))) {
-        System.out.println (" > Building Index for Bucket " + (bucketPos + 1));
+        //DEBUG
+        //System.out.println (" > Building Index for Bucket " + (bucketPos + 1));
         
         //Create the Index Block
         linearBucketCount++;
         GlobalClusterIndexBlock indexBlock = new GlobalClusterIndexBlock(clusterOrder.get(clusterPos), curBucket.getFirstBucketKey());
         indexBlock.setBlockID("GlobalIndex " + linearBucketCount);
         
+        //DEBUG
+        //System.out.println ("   > Cluster Index Block");
         //Build the cluster level global index block
-        System.out.println ("   > Cluster Index Block");
         for (int eachClusterPos = 0; eachClusterPos < clusterOrder.size(); eachClusterPos++) {
           int nextClusterPos = (eachClusterPos + clusterPos + 1) % clusterOrder.size();
           if (clusterOffsets.get(nextClusterPos) != bucketIndex) {
@@ -226,12 +230,12 @@ public class ClusteredBroadcastBuilder extends BroadcastBuilder {
         }
         System.out.println ("Range: [" + expBuckets.get(expBuckets.size() - 1) + " - " + bucketsRemaining + "]");
         
-        *****/
         System.out.println ("True Ranges");
         for (int values : expBuckets) {
           System.out.println ("Value: " + values);
         }
-        //END DEBUG ----------------------------------------
+        //END DEBUG ---------------------------------------- */
+        
         GlobalIndexArrayItem indexItem0 = new GlobalIndexArrayItem(0, 0, curBucket.getLastBucketKey());
         indexBlock.addExponentialIndexRow(indexItem0);
         
@@ -245,6 +249,7 @@ public class ClusteredBroadcastBuilder extends BroadcastBuilder {
         
         //All the middle buckets we can handle the same way.
         for (int i = 3; i < expBuckets.size(); i++) {
+          //DEBUG
           //System.out.println ("Range: [" + expBuckets.get(i - 1) + " - " + (expBuckets.get(i) - 1) + "]");
           endBucketPos = bucketPos + expBuckets.get(i) - 1;
           GlobalIndexArrayItem indexItem = new GlobalIndexArrayItem(expBuckets.get(i - 1), (expBuckets.get(i - 1) * (bucketSize + 2)) - 1, 
@@ -271,8 +276,8 @@ public class ClusteredBroadcastBuilder extends BroadcastBuilder {
         curBucket.assignGlobalIndex(indexBlock);
         curBucket.updateNextIndexOffsets();
         
-        System.out.println ("     ---------------------------------------------");
-        System.out.println (curBucket.toString());
+        //DEBUG
+        //System.out.println (curBucket.toString());
         
         bucketPos++;
       }//end for buckets in this cluster
@@ -286,12 +291,14 @@ public class ClusteredBroadcastBuilder extends BroadcastBuilder {
   @Override
   public List<Block> assembleBcast() {
     //DEBUG
-    System.out.println ("Assembling the bcast");
+    //System.out.println ("Assembling the bcast");
+    
     int expectedBlockCount = 0;
     for (String cluster : clusterOrder)
       expectedBlockCount += (clusters.get(cluster).size() * (bucketSize + 2));
     
-    System.out.println ("Expected final bcast size: " + expectedBlockCount);
+    //DEBUG
+    //System.out.println ("Expected final bcast size: " + expectedBlockCount);
     
     List<Block> bcast = new ArrayList<Block>(expectedBlockCount);
     
@@ -301,7 +308,8 @@ public class ClusteredBroadcastBuilder extends BroadcastBuilder {
         bcast.addAll(curBucket.flattenBucket());
     }
 
-    System.out.println ("Actual final bcast size:   " + bcast.size());
+    //DEBUG
+    //System.out.println ("Actual final bcast size:   " + bcast.size());
     
     return bcast;
   }
