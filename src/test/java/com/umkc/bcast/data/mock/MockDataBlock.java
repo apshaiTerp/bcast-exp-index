@@ -1,5 +1,6 @@
 package com.umkc.bcast.data.mock;
 
+import com.umkc.bcast.data.Block;
 import com.umkc.bcast.data.BlockType;
 import com.umkc.bcast.data.DataBlock;
 
@@ -63,5 +64,16 @@ public class MockDataBlock extends DataBlock {
    */
   public void setMockDataValue(int mockDataValue) {
     this.mockDataValue = mockDataValue;
+  }
+  
+  /*
+   * (non-Javadoc)
+   * @see com.umkc.bcast.data.Block#clone()
+   */
+  @Override
+  public Block clone() {
+    MockDataBlock block = new MockDataBlock(mockDataDescription, mockDataValue, uniqueIdentifier, 
+        clusterGroup, dataKey);
+    return block;
   }
 }

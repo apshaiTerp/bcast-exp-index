@@ -2,6 +2,7 @@ package com.umkc.bcast.data.impl;
 
 import java.util.ArrayList;
 
+import com.umkc.bcast.data.Block;
 import com.umkc.bcast.data.BlockType;
 import com.umkc.bcast.data.IndexBlock;
 import com.umkc.bcast.data.LocalIndexArrayItem;
@@ -70,5 +71,14 @@ public class LocalIndexBlock extends IndexBlock {
     result += "   Next Global Index Block: " + nextIndexOffset + "\n";
     
     return result;
+  }
+  
+  /*
+   * (non-Javadoc)
+   * @see com.umkc.bcast.data.Block#clone()
+   */
+  @Override
+  public Block clone() {
+    return null;
   }
 }

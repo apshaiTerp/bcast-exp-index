@@ -17,6 +17,7 @@ import com.umkc.bcast.data.IndexBlock;
 import com.umkc.bcast.data.mock.MockDataBlock;
 import com.umkc.bcast.util.ClusteredBroadcastBuilder;
 import com.umkc.bcast.util.FlatBroadcastBuilder;
+import com.umkc.bcast.util.SkewedClusteredBroadcastBuilder;
 
 /**
  * This test class should demonstrate how to construct a broadcast.
@@ -275,6 +276,75 @@ public class TestBroadcastGeneration {
     assertTrue("Search term 'GAMMA'|'wiggle' should be found in cluster 'GAMMA'", indexBlock.getNextReadOffset("GAMMA", "wiggle") == 461);
     assertTrue("Search term 'ALPHA'|'apple' should be found in cluster 'ALPHA'", indexBlock.getNextReadOffset("ALPHA", "apple") == 965);
     assertTrue("Search term 'ALPHA'|'freak' should be found in block 'juniper'", indexBlock.getNextReadOffset("ALPHA", "freak") == 34);
+  }
+  
+
+  
+  /**
+   * Simple Test method to create a clustered broadcast based on 4 clusters with a combined
+   * total of 720 data blocks and using an exponentFactor of 2 and a bucketSize of 10.
+   */
+  @Test
+  public void testClusteredSkewedBcast2By10() {
+    System.out.println ("**********  testClusteredSkewedBcast(2, 10)  **********");
+
+    List<DataBlock> testBlocks1 = null;
+    List<DataBlock> testBlocks2 = null;
+    List<DataBlock> testBlocks3 = null;
+    List<DataBlock> testBlocks4 = null;
+    
+    testBlocks1 = generateDataBlocks("ALPHA");
+    testBlocks2 = generateNumberDataBlocks("BETA");
+    testBlocks3 = generateDataBlocks("GAMMA");
+    testBlocks4 = generateNumberDataBlocks("DELTA");
+    
+    BroadcastBuilder builder = new SkewedClusteredBroadcastBuilder(2, 10, false);
+    
+    builder.assignDataBlocks(testBlocks1);
+    builder.assignDataBlocks(testBlocks2);
+    builder.assignDataBlocks(testBlocks3);
+    builder.assignDataBlocks(testBlocks4);
+    
+    List<String> clusterOrder = new ArrayList<String>(2);
+    clusterOrder.add("ALPHA");
+    clusterOrder.add("BETA");
+    clusterOrder.add("GAMMA");
+    clusterOrder.add("BETA");
+    clusterOrder.add("DELTA");
+    clusterOrder.add("GAMMA");
+    
+    builder.addClusterKeys(clusterOrder);
+    
+    builder.constructGlobalIndices();
+    
+    List<Block> bcast = builder.assembleBcast();
+    System.out.println ("--  The final bcast structure for (2, 10)  --");
+    System.out.println ("Total bcast blocks:                    " + bcast.size());
+    System.out.println ("Initial data blocks in bcast:          " + 
+        (testBlocks1.size() + testBlocks2.size() + testBlocks3.size() + testBlocks4.size()));
+    System.out.println ("Number of index blocks added to bcast: " + 
+        (bcast.size() - testBlocks1.size() - (testBlocks2.size() * 2) - (testBlocks3.size() * 2) - testBlocks4.size()));
+    //for (Block curBlock : bcast)
+    //  System.out.println (curBlock.getBlockID());
+    
+    assertTrue("The bcast size should be 1296", bcast.size() == 1296);
+    
+    /***********
+    //TEST Access - Picking a GlobalIndex Block
+    IndexBlock indexBlock = (IndexBlock)bcast.get(36);
+    //System.out.println (indexBlock);
+    
+    assertTrue("Search term 'ALPHA'|'wiggle' should be found in block 'zone'", indexBlock.getNextReadOffset("ALPHA", "wiggle") == 191);
+    assertTrue("Search term 'GAMMA'|'wiggle' should be found in cluster 'GAMMA'", indexBlock.getNextReadOffset("GAMMA", "wiggle") == 395);
+    assertTrue("Search term 'ALPHA'|'apple' should be found in cluster 'ALPHA'", indexBlock.getNextReadOffset("ALPHA", "apple") == 827);
+    assertTrue("Search term 'ALPHA'|'freak' should be found in block 'gyrate'", indexBlock.getNextReadOffset("ALPHA", "freak") == 23);
+
+    //Now we test a few lookups, to track the navigation through the index
+    assertTrue("I expect this seach to complete", executeClusterSearch(bcast, "ALPHA", "ninja"));
+    assertTrue("I expect this seach to complete", executeClusterSearch(bcast, "GAMMA", "cellular"));
+    assertTrue("I expect this seach to complete", executeClusterSearch(bcast, "BETA", "681275871041"));
+    assertTrue("I expect this seach to complete", executeClusterSearch(bcast, "DELTA", "171983567834"));
+    /****************/
   }
   
   /**

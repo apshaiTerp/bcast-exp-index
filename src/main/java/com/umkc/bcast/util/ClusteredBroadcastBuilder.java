@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.umkc.bcast.BroadcastBuilder;
 import com.umkc.bcast.data.Block;
+import com.umkc.bcast.data.BlockType;
 import com.umkc.bcast.data.Bucket;
 import com.umkc.bcast.data.DataBlock;
 import com.umkc.bcast.data.GlobalIndexArrayItem;
@@ -308,6 +309,27 @@ public class ClusteredBroadcastBuilder extends BroadcastBuilder {
         bcast.addAll(curBucket.flattenBucket());
     }
 
+    //One last thing we need to do is rename the blocks to match the order they are now
+    //lined up in for the bcast.
+    int globalIndexCount = 0;
+    int localIndexCount  = 0;
+    int dataBlockCount   = 0;
+    
+    for (Block curBlock : bcast) {
+      if (curBlock.getBlockType() == BlockType.GLOBAL_CLUSTER_INDEX_BLOCK) {
+        globalIndexCount++;
+        curBlock.setBlockID("GlobalIndex " + globalIndexCount);
+      }
+      if (curBlock.getBlockType() == BlockType.LOCAL_INDEX_BLOCK) {
+        localIndexCount++;
+        curBlock.setBlockID("LocalIndex " + localIndexCount);
+      }
+      if (curBlock.getBlockType() == BlockType.DATA_BLOCK) {
+        dataBlockCount++;
+        curBlock.setBlockID("DataBlock" + dataBlockCount);
+      }
+    }
+    
     //DEBUG
     //System.out.println ("Actual final bcast size:   " + bcast.size());
     

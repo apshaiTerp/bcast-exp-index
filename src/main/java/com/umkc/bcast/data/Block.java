@@ -56,4 +56,11 @@ public abstract class Block {
   public void setNextIndexOffset(int nextIndexOffset) {
     this.nextIndexOffset = nextIndexOffset;
   }
+  
+  /**
+   * This method is used to make a clone of the given block.
+   * 
+   * @return a clone of the current block
+   */
+  public abstract Block clone();
 }

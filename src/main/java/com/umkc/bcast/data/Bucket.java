@@ -144,4 +144,12 @@ public class Bucket {
     
     return result;
   }
+  
+  public Bucket clone(String bucketLabel) {
+    Bucket cloneBucket = new Bucket(bucketLabel, useUniqueIdentifier);
+    for (DataBlock curBlock : dataBlocks)
+      cloneBucket.addDataBlock(curBlock);
+    
+    return cloneBucket;
+  }
 }
